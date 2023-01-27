@@ -6,6 +6,7 @@
 //
 //===---------------------------------------------------------------------------===//
 
+#include "Pixie16.h"
 // #include "MCTargetDesc/Pixie16AsmBackend.h"
 // #include "MCTargetDesc/Pixie16BaseInfo.h"
 // #include "MCTargetDesc/Pixie16InstPrinter.h"
@@ -79,6 +80,11 @@ public:
 };
 
 struct Pixie16Operand: public MCParsedAsmOperand {
+  uint16_t imm16;
+  Pixie16::Regno regno;
+  bool hasReg = false;
+  bool hasImm16 = false;
+  
   
 };
 
