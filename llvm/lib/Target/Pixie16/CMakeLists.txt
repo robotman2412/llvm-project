@@ -22,6 +22,7 @@ tablegen(LLVM Pixie16GenRegisterInfo.inc -gen-register-info)
 add_public_tablegen_target(Pixie16CommonTableGen)
 
 add_llvm_target(Pixie16CodeGen
+  Pixie16.cpp
   # Pixie16TargetMachine.cpp
   # Pixie16InstPrinter.cpp
 

@@ -81,46 +81,80 @@ public:
 
 struct Pixie16Operand: public MCParsedAsmOperand {
   uint16_t imm16;
+  Pixie16::Regno memReg;
   Pixie16::Regno regno;
+  StringRef token;
   bool hasReg = false;
   bool hasImm16 = false;
+  bool hasToken = false;
   
+  // Used by the TableGen code.
+  void addRegOperands(MCInst &Inst, unsigned N) const {
+    assert(N == 1 && "Invalid number of operands!");
+    Inst.addOperand(MCOperand::createReg(getReg()));
+  }
+  
+  // Used by the TableGen code.
+  void addImmOperands(MCInst &Inst, unsigned N) const {
+    assert(N == 1 && "Invalid number of operands!");
+    Inst.addOperand(MCOperand::createImm(imm16));
+  }
+  
+  // isToken - Is this a token operand?
+  virtual bool isToken() const override {
+    return imm16;
+  }
+  // isImm - Is this an immediate operand?
+  virtual bool isImm() const override {
+    return hasImm16;
+  }
+  // isImm - Is this an immediate operand?
+  bool isImm16() const {
+    return hasImm16;
+  }
+  // isReg - Is this a register operand?
+  virtual bool isReg() const override {
+    return hasReg;
+  }
+  virtual unsigned getReg() const override {
+    return (unsigned) regno;
+  }
+  
+  // isMem - Is this a memory operand?
+  virtual bool isMem() const override {
+    return memReg != Pixie16::Imm;
+  }
+  
+  // print - Print a debug representation of the operand to the given stream.
+  virtual void print(raw_ostream &OS) const override {
+    if (memReg == Pixie16::Imm) {
+      OS << '[';
+    } else if (memReg != Pixie16::PF) {
+      OS << '[' << Pixie16::regNames[memReg] << '+';
+    }
+    if (hasToken) {
+      OS << token;
+      if (hasImm16) {
+        OS << '+' << imm16;
+      }
+    } else if (hasImm16) {
+      OS << imm16;
+    } else {
+      OS << Pixie16::regNames[regno];
+    }
+    if (isMem()) OS << ']';
+  }
+  
+  StringRef getToken() const {
+    assert(hasToken && "Invalid type access!");
+    return token;
+  }
   
 };
 
 // Auto-generated instruction matching functions
 #define GET_MATCHER_IMPLEMENTATION
 #include "Pixie16GenAsmMatcher.inc"
-
-// bool Pixie16AsmParser::parseRegister(MCRegister &RegNo, SMLoc &StartLoc, SMLoc &EndLoc) {
-  
-// }
-
-// OperandMatchResultTy tryParseRegister(MCRegister &RegNo, SMLoc &StartLoc,
-//                                       SMLoc &EndLoc) {
-//   // lolol
-// }
-
-// bool Pixie16AsmParser::ParseInstruction(ParseInstructionInfo &Info, StringRef Name,
-//                       SMLoc NameLoc, OperandVector &Operands) {
-//   // lolol
-// }
-
-// bool Pixie16AsmParser::ParseDirective(AsmToken DirectiveID) {
-//   // lolol
-// }
-
-// bool Pixie16AsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
-//                                       OperandVector &Operands, MCStreamer &Out,
-//                                       uint64_t &ErrorInfo,
-//                                       bool MatchingInlineAsm) {
-//   // lolol
-// }
-
-// void Pixie16AsmParser::convertToMapAndConstraints(unsigned Kind,
-//                                 const OperandVector &Operands) {
-//   // lolol
-// }
 
 }
 
